@@ -47,8 +47,41 @@
             Select-Object @{Name='Name';Expression={$_.BaseName}},
                           @{Name='Path';Expression={$_.FullName}}
 
+    $exeFolders = @("C:\Program Files", "C:\Program Files (x86)")
+    $exeApps = Get-ChildItem -Path $exeFolders -Recurse -Filter *.exe |
+           Select-Object @{Name='Name';Expression={$_.BaseName}},
+                         @{Name='Path';Expression={$_.FullName}}
+    $apps += $exeApps
+
 
     return $apps | Sort-Object Name -Unique
+}
+<# private #> function Get-AppsList {
+    [CmdletBinding()]
+    param ()
+
+    $startFolders = @(
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
+    ) | Where-Object { Test-Path $_ }
+
+    $exeFolders = @(
+        "C:\Program Files", 
+        "C:\Program Files (x86)"
+        ) | Where-Object { Test-Path $_ }
+
+    $lnkApps = $startFolders |
+        ForEach-Object { Get-ChildItem -Path $_ -Recurse -Filter *.lnk -ErrorAction SilentlyContinue } |
+        Select-Object @{Name='Name'; Expression = {$_.BaseName}},
+                      @{Name='Path'; Expression = {$_.FullName}}
+
+    $exeApps = $exeFolders |
+        ForEach-Object { Get-ChildItem -Path $_ -Recurse -Filter *.exe -ErrorAction SilentlyContinue } |
+        Select-Object @{Name='Name'; Expression = {$_.BaseName}},
+                      @{Name='Path'; Expression = {$_.FullName}}
+
+    # Unisce, rimuove duplicati e ordina
+    return ($lnkApps + $exeApps) | Sort-Object Name -Unique
 }
 
 <# private #> function Start-AppFromPath {

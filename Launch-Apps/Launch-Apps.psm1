@@ -41,51 +41,29 @@
     $startFolders = @(
         "$env:ProgramData\Microsoft\Windows\Start Menu\Programs",
         "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
-    )
-
-   $apps = Get-ChildItem -Path $startFolders -Recurse -Filter *.lnk |
-            Select-Object @{Name='Name';Expression={$_.BaseName}},
-                          @{Name='Path';Expression={$_.FullName}}
-
-    $exeFolders = @("C:\Program Files", "C:\Program Files (x86)")
-    $exeApps = Get-ChildItem -Path $exeFolders -Recurse -Filter *.exe |
-           Select-Object @{Name='Name';Expression={$_.BaseName}},
-                         @{Name='Path';Expression={$_.FullName}}
-    $apps += $exeApps
-
-
-    return $apps | Sort-Object Name -Unique
-}
-<# private #> function Get-AppsList {
-    [CmdletBinding()]
-    param ()
-
-    $startFolders = @(
-        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs",
-        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
     ) | Where-Object { Test-Path $_ }
 
     $exeFolders = @(
         "C:\Program Files", 
         "C:\Program Files (x86)"
-        ) | Where-Object { Test-Path $_ }
+    ) | Where-Object { Test-Path $_ }
 
     $lnkApps = $startFolders |
-        ForEach-Object { Get-ChildItem -Path $_ -Recurse -Filter *.lnk -ErrorAction SilentlyContinue } |
-        Select-Object @{Name='Name'; Expression = {$_.BaseName}},
-                      @{Name='Path'; Expression = {$_.FullName}}
+    ForEach-Object { Get-ChildItem -Path $_ -Recurse -Filter *.lnk -ErrorAction SilentlyContinue } |
+    Select-Object @{Name = 'Name'; Expression = { $_.BaseName } },
+    @{Name = 'Path'; Expression = { $_.FullName } }
 
     $exeApps = $exeFolders |
-        ForEach-Object { Get-ChildItem -Path $_ -Recurse -Filter *.exe -ErrorAction SilentlyContinue } |
-        Select-Object @{Name='Name'; Expression = {$_.BaseName}},
-                      @{Name='Path'; Expression = {$_.FullName}}
+    ForEach-Object { Get-ChildItem -Path $_ -Recurse -Filter *.exe -ErrorAction SilentlyContinue } |
+    Select-Object @{Name = 'Name'; Expression = { $_.BaseName } },
+    @{Name = 'Path'; Expression = { $_.FullName } }
 
     # Unisce, rimuove duplicati e ordina
     return ($lnkApps + $exeApps) | Sort-Object Name -Unique
 }
 
 <# private #> function Start-AppFromPath {
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory)]
         [string]$Path,
@@ -102,13 +80,13 @@
             Write-Host "✔️ Launched: $Path" -ForegroundColor Green
         }
         catch {
-            Write-Warning "⚠️ Failed to launch $Path: $_"
+            Write-Warning "⚠️ Failed to launch $Path : $_"
         }
     }
 }
 
-<# public #> function Launch-App {
-    [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
+<# public #> function Launch-Apps {
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
         [switch]$RunAsAdmin
     )
@@ -124,9 +102,9 @@
     if ($selection) {
         $app = $apps | Where-Object { $_.Name -eq $selection }
         if ($app) {
-            Start-AppFromPath -Path $app.Path -RunAsAdmin $RunAsAdmin -WhatIf:$PSCmdlet.WhatIfPreference -Confirm:$PSCmdlet.ConfirmPreference
+            Start-AppFromPath -Path $app.Path -RunAsAdmin:$RunAsAdmin
         }
     }
 }
 
-Set-Alias fzl Launch-App
+Set-Alias fzl Launch-Apps

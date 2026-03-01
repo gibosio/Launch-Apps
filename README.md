@@ -1,10 +1,10 @@
 
-# 🚀 Launch-App
+# 🚀 Launch-Apps
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/Launch-App?color=blue)](https://www.powershellgallery.com/packages/Launch-App)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/Launch-Apps?color=blue)](https://www.powershellgallery.com/packages/Launch-Apps)
 
-**Launch-App** is a PowerShell module to interactively launch Windows applications using fuzzy search (`fzf`).  
+**Launch-Apps** is a PowerShell module to interactively launch Windows applications using fuzzy search (`fzf`).  
 It supports:
 - Start Menu shortcuts (`.lnk`)
 - Executables in `C:\Program Files` and `C:\Program Files (x86)`
@@ -17,14 +17,14 @@ It supports:
 Clone the repository or download the files:
 
 ```powershell
-> git clone https://github.com/gibosio/Launch-App.git
-> cd Launch-App\Launch-App
+> git clone https://github.com/gibosio/Launch-Apps.git
+> cd Launch-Apps\Launch-Apps
 ```
 
 Copy the module to a folder in `$env:PSModulePath`:
 
 ```powershell
-> $target = "$env:USERPROFILE\Documents\PowerShell\Modules\Launch-App"
+> $target = "$env:USERPROFILE\Documents\PowerShell\Modules\Launch-Apps"
 > New-Item -ItemType Directory -Force -Path $target
 > Copy-Item -Recurse -Path .\* -Destination $target
 ```
@@ -32,16 +32,16 @@ Copy the module to a folder in `$env:PSModulePath`:
 Import the module:
 
 ```powershell
-> Import-Module Launch-App
+> Import-Module Launch-Apps
 ```
 
 Verify:
 
 ```powershell
-Get-Command -Module Launch-App -CommandType All
+Get-Command -Module Launch-Apps -CommandType All
 ```
 
-You should see `Launch-App` and alias `fzl`.
+You should see `Launch-Apps` and alias `fzl`.
 
 ---
 
@@ -50,7 +50,7 @@ You should see `Launch-App` and alias `fzl`.
 Main command:
 
 ```powershell
-> Launch-App [-RunAsAdmin]
+> Launch-Apps [-RunAsAdmin]
 ```
 
 Alias:
@@ -71,14 +71,14 @@ Alias:
 Launch an application normally:
 
 ```powershell
-> Launch-App
+> Launch-Apps
 > fzl
 ```
 
 Launch as administrator:
 
 ```powershell
-> Launch-App -RunAsAdmin
+> Launch-Apps -RunAsAdmin
 > fzl -RunAsAdmin
 ```
 

@@ -85,28 +85,30 @@
 }
 
 <# private #> function Start-AppFromPath {
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory)]
         [string]$Path,
         [switch]$RunAsAdmin
     )
-
-    try {
-        if ($RunAsAdmin) {
-            Start-Process -FilePath $Path -Verb RunAs
+    if ($PSCmdlet.ShouldProcess($Path, "Launch application")) {
+        try {
+            if ($RunAsAdmin) {
+                Start-Process -FilePath $Path -Verb RunAs
+            }
+            else {
+                Start-Process -FilePath $Path
+            }
+            Write-Host "✔️ Launched: $Path" -ForegroundColor Green
         }
-        else {
-            Start-Process -FilePath $Path
+        catch {
+            Write-Warning "⚠️ Failed to launch $Path: $_"
         }
-        Write-Host "✔️ Launched: $Path" -ForegroundColor Green
-    }
-    catch {
-        Write-Warning "⚠️ Failed to launch $Path: $_"
     }
 }
 
 <# public #> function Launch-App {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
     param(
         [switch]$RunAsAdmin
     )
@@ -122,7 +124,7 @@
     if ($selection) {
         $app = $apps | Where-Object { $_.Name -eq $selection }
         if ($app) {
-            Start-AppFromPath -Path $app.Path -RunAsAdmin $RunAsAdmin
+            Start-AppFromPath -Path $app.Path -RunAsAdmin $RunAsAdmin -WhatIf:$PSCmdlet.WhatIfPreference -Confirm:$PSCmdlet.ConfirmPreference
         }
     }
 }
